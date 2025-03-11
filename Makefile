@@ -1,12 +1,9 @@
 # DOCKER
 docker_build:
-	docker build -t prongs .
+	docker build -t prongs ./app
 
 docker_run:
 	docker run -it prongs
-
-docker_exec:
-	docker exec -it prongs /bin/sh
 
 # PYTHON
 venv_create:
@@ -23,8 +20,8 @@ update_packages:
 	python3 -m venv ./venv; \
 	. ./venv/bin/activate && \
 	pip3 install -r requirements-dev.txt && \
-	echo "[*] Checking: requirements.txt" && \
-	pur -r requirements.txt && \
+	echo "[*] Checking: app/requirements.txt" && \
+	pur -r app/requirements.txt && \
 	echo "[*] Checking: requirements-dev.txt" && \
 	pur -r requirements-dev.txt && \
 	deactivate;
