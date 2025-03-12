@@ -102,4 +102,4 @@ if __name__ == "__main__":
         ]
 
     print(f"Scanning {len(target_hosts)} target/s...")
-    # main(target_hosts)
+    main(target_hosts)

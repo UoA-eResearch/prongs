@@ -66,9 +66,6 @@ def run(hosts: list[ipaddress.IPv4Network]) -> None:
                 print(f"🚨 {ip}:{port} is open")
             else:
                 print(f"{date.today()}\t{ip}\taccessible-db")
-        else:
-            if Config.pretty_print:
-                print(f"🛡️ {ip}:{port} is closed")
 
     if Config.pretty_print:
         print(f"Total hosts/checks: {total_hosts}/{PROGRESS_COUNTER}")
