@@ -88,7 +88,7 @@ def run(hosts: list[ipaddress.IPv4Network]) -> None:
             if Config.pretty_print:
                 print(f"🚨 {ip}:{port} allows password authentication")
             else:
-                print(f"{date.today()}\t{ip}\tpassword-ssh")
+                print(f"{date.today()}\t{ip}\tpassword-ssh\t22")
 
     if Config.pretty_print:
         print(f"Total hosts/checks: {total_hosts}/{PROGRESS_COUNTER}")

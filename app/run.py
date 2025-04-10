@@ -101,5 +101,4 @@ if __name__ == "__main__":
             host for cidr in os.getenv("TARGET_CIDRS").split(",") for host in ipaddress.ip_network(cidr).hosts()
         ]
 
-    print(f"Scanning {len(target_hosts)} target/s...")
     main(target_hosts)
