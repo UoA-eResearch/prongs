@@ -81,6 +81,8 @@ if __name__ == "__main__":
     if args.enable_all:
         for scan_type in Config.scan_types_enabled:
             Config.scan_types_enabled[scan_type] = True
+            if scan_type == "accessible-rdp":
+                Config.scan_types_enabled[scan_type] = False
 
     if args.enable_scan:
         for scan_type in args.enable_scan:
