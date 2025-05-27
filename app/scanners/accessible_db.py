@@ -1,5 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime
+from datetime import datetime, timezone
 import ipaddress
 from queue import Queue
 import socket
@@ -65,7 +65,7 @@ def run(hosts: list[ipaddress.IPv4Network]) -> None:
             if Config.pretty_print:
                 print(f"🚨 {ip}:{port} is open")
             else:
-                print(f"{datetime.now().isoformat()}\t{ip}\taccessible-db\t{port}")
+                print(f"{datetime.now(timezone.utc).isoformat()}\t{ip}\taccessible-db\t{port}")
 
     if Config.pretty_print:
         print(f"Total hosts/checks: {total_hosts}/{PROGRESS_COUNTER}")
