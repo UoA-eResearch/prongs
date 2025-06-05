@@ -7,6 +7,7 @@ docker_run:
 
 # PYTHON
 venv_create:
+	cd app; \
 	python3 -m venv ./venv; \
 	. ./venv/bin/activate && \
 	pip3 install -r requirements.txt \
