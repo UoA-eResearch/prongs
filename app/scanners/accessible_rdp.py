@@ -1,13 +1,12 @@
-from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timezone
 import ipaddress
-from queue import Queue
 import socket
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timezone
+from queue import Queue
 
-from config import Config
-
+import config
 
 PROGRESS_COUNTER = 0
 
@@ -41,31 +40,31 @@ def run(hosts: list[ipaddress.IPv4Network]) -> None:
 
         while any(future.running() for future in futures):
             with progress_lock:
-                if Config.pretty_print:
+                if config.pretty_print:
                     print(f"\rProgress: {PROGRESS_COUNTER}/{total_hosts}", end="")
             time.sleep(1)
 
     for future in futures:
         future.result()
 
-    if Config.pretty_print:
+    if config.pretty_print:
         print(f"\rProgress: {PROGRESS_COUNTER}/{total_hosts}")
 
     while not result_queue.empty():
         ip, port, status = result_queue.get()
         if status:
-            if Config.pretty_print:
+            if config.pretty_print:
                 print(f"🚨 {ip}:{port} is open")
             else:
                 print(f"{datetime.now(timezone.utc).isoformat()}\t{ip}\taccessible-rdp\t3389")
 
-    if Config.pretty_print:
+    if config.pretty_print:
         print(f"Total hosts/checks: {total_hosts}/{PROGRESS_COUNTER}")
 
 
 def main():
-    Config.pretty_print = True
-    run(Config.test_host)
+    config.pretty_print = True
+    run(config.test_host)
 
 
 if __name__ == "__main__":
