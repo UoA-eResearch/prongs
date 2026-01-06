@@ -42,8 +42,12 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
+# D104 - Missing docstring in public package
 # E402 - Module level import not at top of file
+"app/__init__.py" = ["D104"]
+"app/scanners/__init__.py" = ["D104"]
 "test/**" = ["E402"]
+
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
