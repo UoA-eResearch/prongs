@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: help install install_all update clean build lint format format_check docker_build docker_run
+.PHONY: help install install_all update clean build lint format format_check test docker_build docker_run
 
 help:
 	@echo "Available targets:"
@@ -12,6 +12,7 @@ help:
 	@echo "  lint            Check code with ruff"
 	@echo "  format          Format code with ruff"
 	@echo "  format_check    Check code formatting"
+	@echo "  test            Run pytest"
 	@echo "  docker_build    Build the docker image"
 	@echo "  docker_run      Run the docker image"
 
@@ -39,6 +40,9 @@ format:
 
 format_check:
 	uv run ruff format --check .
+
+test:
+	uv run pytest -rP
 
 # DOCKER
 docker_build:
