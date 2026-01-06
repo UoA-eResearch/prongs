@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: help install install_all update clean build lint format format_check test docker_build docker_run
+.PHONY: help install install_all update clean build lint format format_check test docker_build docker_run tag_release
 
 help:
 	@echo "Available targets:"
@@ -13,6 +13,7 @@ help:
 	@echo "  format          Format code with ruff"
 	@echo "  format_check    Check code formatting"
 	@echo "  test            Run pytest"
+	@echo "  tag_release     Tag git with version from pyproject and push"
 	@echo "  docker_build    Build the docker image"
 	@echo "  docker_run      Run the docker image"
 
@@ -50,3 +51,23 @@ docker_build:
 
 docker_run:
 	docker run -it prongs
+
+# TAG
+tag_release:
+	VERSION=$$(grep -m1 'version = ' pyproject.toml | cut -d '"' -f 2); \
+	TAG="v$$VERSION"; \
+	echo "[*] Current version: $$TAG"; \
+	read -p "[*] Tag and push? (y/N) " yn; \
+	case $$yn in \
+		[yY]*) \
+			echo "Running: git tag $$TAG"; \
+			echo "Running: git push origin $$TAG"; \
+			;; \
+		[nN]*) \
+			echo "[*] Exiting..."; \
+			;; \
+		*) \
+			echo "[*] Invalid response... Exiting"; \
+			exit 1; \
+			;; \
+	esac
