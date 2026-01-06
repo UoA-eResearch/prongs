@@ -1,11 +1,12 @@
+import argparse
 import ipaddress
 import os
 
-import config
-from scanners import accessible_db, accessible_rdp, password_ssh
+from . import config
+from .scanners import accessible_db, accessible_rdp, password_ssh
 
 
-def main(target_hosts: list[ipaddress.IPv4Address]) -> None:
+def run(target_hosts: list[ipaddress.IPv4Address]) -> None:
     for scan_type, enabled in config.scan_types_enabled.items():
         if not enabled:
             continue
@@ -18,20 +19,16 @@ def main(target_hosts: list[ipaddress.IPv4Address]) -> None:
             password_ssh.run(target_hosts)
 
 
-if __name__ == "__main__":
-    import argparse
-
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-p",
-        "--pretty-print",
+        "-p", "--pretty-print",
         default=config.pretty_print,
         action="store_true",
         help="Enable pretty print output",
     )
     parser.add_argument(
-        "-v",
-        "--version",
+        "-v", "--version",
         action="version",
         version=config.version,
         help="Show version number",
@@ -39,37 +36,31 @@ if __name__ == "__main__":
 
     target_group = parser.add_mutually_exclusive_group()
     target_group.add_argument(
-        "-f",
-        "--file",
+        "-f", "--file",
         help="Set target/s CIDR from file (line separated)",
     )
     target_group.add_argument(
-        "-t",
-        "--targets",
+        "-t", "--targets",
         help="Set target/s CIDR as argument (comma-separated list)",
     )
     target_group.add_argument(
-        "-e",
-        "--envvars",
+        "-e", "--envvars",
         action="store_true",
         help="Set target/s CIDR from env vars (comma-separated list)",
     )
 
     scan_group = parser.add_mutually_exclusive_group()
     scan_group.add_argument(
-        "-a",
-        "--enable-all",
+        "-a", "--enable-all",
         action="store_true",
         help="Enable all scan types",
     )
     scan_group.add_argument(
-        "-s",
-        "--enable-scan",
+        "-s", "--enable-scan",
         choices=config.scan_types_enabled.keys(),
         action="append",
         help="Enable specific scan type/s",
     )
-
     args = parser.parse_args()
 
     if args.pretty_print:
@@ -109,4 +100,8 @@ if __name__ == "__main__":
             host for cidr in os.getenv("TARGET_CIDRS").split(",") for host in ipaddress.ip_network(cidr).hosts()
         ]
 
-    main(target_hosts)
+    run(target_hosts)
+
+
+if __name__ == "__main__":
+    main()

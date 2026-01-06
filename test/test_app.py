@@ -3,12 +3,11 @@ import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-APP_DIR = PROJECT_ROOT / "app"
-if str(APP_DIR) not in sys.path:
-    sys.path.insert(0, str(APP_DIR))
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
-import config
-from scanners import accessible_db, accessible_rdp, password_ssh
+from app import config
+from app.scanners import accessible_db, accessible_rdp, password_ssh
 
 
 def test_scanners_smoke(capsys):

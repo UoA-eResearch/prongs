@@ -6,7 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from queue import Queue
 
-import config
+from .. import config
 
 PROGRESS_COUNTER = 0
 

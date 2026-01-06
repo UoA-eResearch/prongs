@@ -17,8 +17,11 @@ dev = [
     "pytest>=8.3.3",
 ]
 
+[project.scripts]
+prongs = "app.run:main"
+
 [tool.setuptools]
-packages = []
+packages = ["app"]
 
 [tool.ruff]
 line-length = 120

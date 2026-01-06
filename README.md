@@ -5,25 +5,33 @@ Fast, custom security scanner
 ## Requirements
 
 - Python 3.9
-- [Paramiko](https://www.paramiko.org/)
 
 ## Quickstart
 
-### Linux
+### Run from source using `uv`
 
-- Use `uv` to install:
-
-```
-uv install
-```
-
-- Use `uv` to install, and include development dependencies:
+- Requirements:
+  - git
+  - [uv](https://github.com/astral-sh/uv)
 
 ```
-uv sync --all-extras
+# Clone repo
+git https://github.com/UoA-eResearch/prongs.git
+# Install using uv
+uv pip install -e .
+# Run
+uv run prongs --help
 ```
 
-- Run using `python app/run.py`
+### Install from repo using `uv`
+
+- Requirements:
+  - [uv](https://github.com/astral-sh/uv)
+
+```
+# Install using uv
+uv tool install git+https://github.com/UoA-eResearch/prongs.git@v0.2.0
+```
 
 ### Examples
 

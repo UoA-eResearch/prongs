@@ -8,7 +8,7 @@ from queue import Queue
 
 import paramiko
 
-import config
+from .. import config
 
 PROGRESS_COUNTER = 0
 
