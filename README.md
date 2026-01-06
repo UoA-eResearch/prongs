@@ -5,43 +5,53 @@ Fast, custom security scanner
 ## Requirements
 
 - Python 3.9
-- [Paramiko](https://www.paramiko.org/)
 
 ## Quickstart
 
-### Linux
+### Run from source using `uv`
 
-- Create virtual environment, activate and install packages:
+- Requirements:
+  - git
+  - [uv](https://github.com/astral-sh/uv)
 
 ```
-cd app
-python3 -m venv venv
-source venv/bin/activate
-pip3 install -r requirements.txt
+# Clone repo
+git https://github.com/UoA-eResearch/prongs.git
+# Install using uv
+uv pip install -e .
+# Run
+uv run prongs --help
 ```
 
-- Test using `python3 test.py`
-- Run using `python3 run.py`
+### Install from repo using `uv`
+
+- Requirements:
+  - [uv](https://github.com/astral-sh/uv)
+
+```
+# Install using uv
+uv tool install git+https://github.com/UoA-eResearch/prongs.git@v0.2.0
+```
 
 ### Examples
 
 - Execute password SSH check against two target networks:
 
 ```
-python3 run.py -s password-ssh -t 192.168.0.0/32,192.168.88.0/32
+python app/run.py -s password-ssh -t 192.168.0.0/32,192.168.88.0/32
 ```
 
 - Execute all scanners against target networks specified in a file:
 
 ```
 echo -e "192.168.0.0/32\n192.168.88.0/32" > targets.txt
-python3 run.py -s password-ssh -f targets.txt
+python app/run.py -s password-ssh -f targets.txt
 ```
 
 - Execute all on password SSH scanner using environment variables:
 
 ```
-TARGET_CIDRS=192.168.0.0/32,192.168.88.0/24 python3 run.py -s password-ssh -e
+TARGET_CIDRS=192.168.0.0/32,192.168.88.0/24 python app/run.py -s password-ssh -e
 ```
 
 ### Docker
@@ -49,33 +59,11 @@ TARGET_CIDRS=192.168.0.0/32,192.168.88.0/24 python3 run.py -s password-ssh -e
 Build the image:
 
 ```
-docker build -t prongs ./app
+docker build -f app/Dockerfile -t prongs .
 ```
 
 Run the container:
 
 ```
 docker run -e TARGET_CIDRS=192.168.0.0/32,192.168.88.0/24 -it prongs
-```
-
-## Development
-
-- Create virtual environment, activate and install packages:
-
-```
-python3 -m venv venv
-source venv/bin/activate
-pip3 install -r requirements-dev.txt
-```
-
-- Update packages
-
-```
-make update_packages
-```
-
-- Python linting:
-
-```
-make lint
 ```

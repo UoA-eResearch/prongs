@@ -2,9 +2,9 @@ FROM python:3.9-alpine
 
 WORKDIR /usr/src/app
 
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir .
 
-COPY ./ .
+COPY app/ ./
 
 CMD [ "python", "./run.py", "--enable-all", "--envvars"]
