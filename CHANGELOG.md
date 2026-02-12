@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0 - 2026-02-13
+
+### Added
+
+- Container release on ghcr.io
+
+### Fixed
+
+- Container image to use correct entrypoint
+
 ## 0.2.0 - 2026-01-07
 
 ### Added

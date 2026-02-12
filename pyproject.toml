@@ -1,6 +1,6 @@
 [project]
 name = "prongs"
-version = "0.2.0"
+version = "0.3.0"
 description = "Fast, custom security scanner"
 authors = [{name = "Thomas Laurenson", email = "tom.laurenson@auckland.ac.nz"}]
 readme = "README.md"
