@@ -60,8 +60,8 @@ tag_release:
 	read -p "[*] Tag and push? (y/N) " yn; \
 	case $$yn in \
 		[yY]*) \
-			echo "Running: git tag $$TAG"; \
-			echo "Running: git push origin $$TAG"; \
+			git tag $$TAG; \
+			git push origin $$TAG; \
 			;; \
 		[nN]*) \
 			echo "[*] Exiting..."; \

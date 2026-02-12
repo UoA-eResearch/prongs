@@ -4,66 +4,89 @@ Fast, custom security scanner
 
 ## Requirements
 
-- Python 3.9
+- Python >=3.9
 
-## Quickstart
+## Installation
 
-### Run from source using `uv`
+### Option 1: Install from source using pip
+
+- Requirements:
+  - git
+  - Python 3.9+
+
+```bash
+# Clone repo
+git clone https://github.com/UoA-eResearch/prongs.git
+cd prongs
+
+# Create and activate virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install
+pip install .
+
+# Run
+prongs --help
+```
+
+### Option 2: Development setup using uv
 
 - Requirements:
   - git
   - [uv](https://github.com/astral-sh/uv)
 
-```
+```bash
 # Clone repo
-git https://github.com/UoA-eResearch/prongs.git
-# Install using uv
-uv pip install -e .
+git clone https://github.com/UoA-eResearch/prongs.git
+cd prongs
+
+# Install dependencies (including dev tools)
+uv sync --all-extras
+
 # Run
 uv run prongs --help
 ```
 
-### Install from repo using `uv`
+### Option 3: Container
 
-- Requirements:
-  - [uv](https://github.com/astral-sh/uv)
+Pull the pre-built image from GitHub Container Registry:
 
+```bash
+docker pull ghcr.io/uoa-eresearch/prongs:latest
 ```
-# Install using uv
-uv tool install git+https://github.com/UoA-eResearch/prongs.git@v0.2.0
+
+Or build locally:
+
+```bash
+docker build -f app/Dockerfile -t prongs .
 ```
+
+## Usage
 
 ### Examples
 
 - Execute password SSH check against two target networks:
 
-```
-python app/run.py -s password-ssh -t 192.168.0.0/32,192.168.88.0/32
+```bash
+prongs -s password-ssh -t 192.168.0.0/32,192.168.88.0/32
 ```
 
 - Execute all scanners against target networks specified in a file:
 
-```
+```bash
 echo -e "192.168.0.0/32\n192.168.88.0/32" > targets.txt
-python app/run.py -s password-ssh -f targets.txt
+prongs -s password-ssh -f targets.txt
 ```
 
-- Execute all on password SSH scanner using environment variables:
+- Execute password SSH scanner using environment variables:
 
-```
-TARGET_CIDRS=192.168.0.0/32,192.168.88.0/24 python app/run.py -s password-ssh -e
-```
-
-### Docker
-
-Build the image:
-
-```
-docker build -f app/Dockerfile -t prongs .
+```bash
+TARGET_CIDRS=192.168.0.0/32,192.168.88.0/24 prongs -s password-ssh -e
 ```
 
-Run the container:
+### Running with Docker
 
-```
-docker run -e TARGET_CIDRS=192.168.0.0/32,192.168.88.0/24 -it prongs
+```bash
+docker run -e TARGET_CIDRS=192.168.0.0/32,192.168.88.0/24 ghcr.io/uoa-eresearch/prongs:latest
 ```
