@@ -49,11 +49,16 @@ test:
 	uv run pytest -rP
 
 # DOCKER
-docker_build:
+docker_local_build:
 	docker build -f app/Dockerfile -t prongs .
 
-docker_run:
-	docker run -it prongs
+docker_local_run:
+	docker run --rm -e TARGET_CIDRS=45.33.32.156 -it prongs
+
+docker_ghcr_run:
+	docker pull ghcr.io/uoa-eresearch/prongs:latest
+	docker tag ghcr.io/uoa-eresearch/prongs:latest prongs
+	docker run --rm -e TARGET_CIDRS=45.33.32.156 -it prongs
 
 # TAG
 tag_release:

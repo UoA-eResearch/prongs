@@ -96,8 +96,11 @@ def main():
             host for cidr in args.targets.split(",") for host in ipaddress.ip_network(cidr).hosts()
         ]
     elif args.envvars:
+        target_cidrs = os.getenv("TARGET_CIDRS")
+        if not target_cidrs:
+            parser.error("TARGET_CIDRS environment variable is not set.")
         target_hosts: list[ipaddress.IPv4Address] = [
-            host for cidr in os.getenv("TARGET_CIDRS").split(",") for host in ipaddress.ip_network(cidr).hosts()
+            host for cidr in target_cidrs.split(",") for host in ipaddress.ip_network(cidr).hosts()
         ]
 
     run(target_hosts)

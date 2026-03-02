@@ -28,16 +28,19 @@ uv run prongs --help
 
 ### Option 2: Container
 
-Pull the pre-built image from GitHub Container Registry:
+Pull and run the pre-built image from GitHub Container Registry:
 
 ```bash
 docker pull ghcr.io/uoa-eresearch/prongs:latest
+docker tag ghcr.io/uoa-eresearch/prongs:latest prongs
+docker run --rm -e TARGET_CIDRS=192.168.0.0/32,192.168.88.0/24 -it prongs
 ```
 
-Or build locally:
+Or build locally and run:
 
 ```bash
 docker build -f app/Dockerfile -t prongs .
+docker run --rm -e TARGET_CIDRS=192.168.0.0/32,192.168.88.0/24 -it prongs
 ```
 
 ## Usage
@@ -68,7 +71,7 @@ TARGET_CIDRS=192.168.0.0/32,192.168.88.0/24 prongs -s password-ssh -e
 - Run with all scanners and pull GHCR image:
 
 ```bash
-docker run --rm -e TARGET_CIDRS=192.168.0.0/32,192.168.88.0/24 ghcr.io/uoa-eresearch/prongs:latest -e
+docker run --rm -e TARGET_CIDRS=192.168.0.0/32,192.168.88.0/24 ghcr.io/uoa-eresearch/prongs:latest
 ```
 
 - Run with one scanner, using local image and remove after execution:

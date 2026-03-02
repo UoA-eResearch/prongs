@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.2 - 2026-03-03
+
+### Fixed
+
+- Fixed Docker run method and examples
+
+## 0.3.1 - 2026-02-27
+
+### Fixed
+
+- Fixed Python package install method
+
 ## 0.3.0 - 2026-02-13
 
 ### Added
