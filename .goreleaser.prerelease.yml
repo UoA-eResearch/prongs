@@ -4,8 +4,7 @@ version: 2
 project_name: prongs
 
 builds:
-  - main: ./cmd/prongs
-    env:
+  - env:
       - CGO_ENABLED=0
     mod_timestamp: "{{ .CommitTimestamp }}"
     binary: >-
