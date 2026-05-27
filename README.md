@@ -1,81 +1,68 @@
 # prongs
 
-Fast, custom security scanner
+![Build Status](https://img.shields.io/github/actions/workflow/status/thomaslaurenson/prongs/tag.yml?style=flat&logo=github) ![Test Status](https://img.shields.io/github/actions/workflow/status/thomaslaurenson/prongs/tag.yml?style=flat&label=test&logo=github)
 
-## Requirements
+![Release Version](https://img.shields.io/github/v/release/thomaslaurenson/prongs?style=flat&logo=github) ![Release downloads](https://img.shields.io/github/downloads/thomaslaurenson/prongs/total?label=downloads&logo=github)
 
-- Python >=3.9
+![Go Version](https://img.shields.io/github/go-mod/go-version/thomaslaurenson/prongs?logo=go) ![Code Coverage](https://img.shields.io/badge/Coverage-94%25-blue?logo=go)
+
+Fast, custom security scanner.
 
 ## Installation
 
-### Option 1: Development setup using uv
-
-- Requirements:
-  - git
-  - [uv](https://github.com/astral-sh/uv)
-
 ```bash
-# Clone repo
-git clone https://github.com/UoA-eResearch/prongs.git
-cd prongs
-
-# Install dependencies (including dev tools)
-uv sync --all-extras
-
-# Run
-uv run prongs --help
+curl -fsSL https://github.com/thomaslaurenson/prongs/releases/latest/download/install.sh | bash
 ```
 
-### Option 2: Container
+Or download a binary directly from the [releases page](https://github.com/thomaslaurenson/prongs/releases).
 
-Pull and run the pre-built image from GitHub Container Registry:
+### Container
 
 ```bash
-docker pull ghcr.io/uoa-eresearch/prongs:latest
-docker tag ghcr.io/uoa-eresearch/prongs:latest prongs
-docker run --rm -e TARGET_CIDRS=192.168.0.0/32,192.168.88.0/24 -it prongs
+docker pull ghcr.io/thomaslaurenson/prongs:latest
+docker run --rm -e TARGET_CIDRS=192.168.0.0/24 ghcr.io/thomaslaurenson/prongs:latest scan --all
 ```
 
-Or build locally and run:
+Or build and run locally:
 
 ```bash
-docker build -f app/Dockerfile -t prongs .
-docker run --rm -e TARGET_CIDRS=192.168.0.0/32,192.168.88.0/24 -it prongs
+docker build -t prongs .
+docker run --rm -e TARGET_CIDRS=192.168.0.0/24 prongs scan --all
 ```
 
 ## Usage
 
-### CLI Examples
-
-- Execute password SSH check against two target networks:
-
-```bash
-prongs -s password-ssh -t 192.168.0.0/32,192.168.88.0/32
+```
+prongs scan --scanner <name>  --target <CIDR|file>
+prongs scan --all             --target <CIDR|file>
+prongs --version
 ```
 
-- Execute all scanners against target networks specified in a file:
+Targets are CIDR ranges or single IPs, supplied via `--target` (repeatable) or a file (one entry per line). If `--target` is omitted, the `TARGET_CIDRS` environment variable is used as a fallback.
+
+### Scanners
+
+| Name | Description | Default |
+|---|---|---|
+| `password-ssh` | Detects SSH servers accepting password authentication | yes |
+| `accessible-rdp` | Detects RDP services accepting unauthenticated connections | yes |
+| `accessible-db` | Detects databases accepting unauthenticated connections | yes |
+
+### Examples
 
 ```bash
-echo -e "192.168.0.0/32\n192.168.88.0/32" > targets.txt
-prongs -s password-ssh -f targets.txt
-```
+# Run one scanner against a single network
+prongs scan --scanner password-ssh --target 192.168.0.0/24
 
-- Execute password SSH scanner using environment variables:
+# Run all default scanners against multiple networks
+prongs scan --all --target 192.168.0.0/24 --target 10.0.0.0/24
 
-```bash
-TARGET_CIDRS=192.168.0.0/32,192.168.88.0/24 prongs -s password-ssh -e
-```
+# Load targets from a file
+prongs scan --all --target targets.txt
 
-### Docker Examples
+# Pretty-print output
+prongs scan --all --target 192.168.0.0/24 --output pretty
 
-- Run with all scanners and pull GHCR image:
-
-```bash
-docker run --rm -e TARGET_CIDRS=192.168.0.0/32,192.168.88.0/24 ghcr.io/uoa-eresearch/prongs:latest
-```
-
-- Run with one scanner, using local image and remove after execution:
-
-```bash
-docker run --rm -e TARGET_CIDRS=192.168.0.0/32,192.168.88.0/24 prongs:latest -s password-ssh -e
+# Use environment variable for targets
+TARGET_CIDRS=192.168.0.0/24 prongs scan --all
 ```

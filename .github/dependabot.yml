@@ -9,18 +9,14 @@ updates:
     assignees:
       - "thomaslaurenson"
 
-  - package-ecosystem: pip
+  - package-ecosystem: gomod
     directory: /
     schedule:
       interval: weekly
-    open-pull-requests-limit: 0  # only security updates
-    assignees:
-      - "thomaslaurenson"
-
-  - package-ecosystem: docker
-    directory: /app
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 0  # only security updates
+    labels:
+      - "dependencies"
+    groups:
+      dev-dependencies:
+        dependency-type: "development"
     assignees:
       - "thomaslaurenson"

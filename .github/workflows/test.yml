@@ -1,4 +1,4 @@
-name: Lint
+name: Test
 
 on: workflow_call
 
@@ -6,7 +6,7 @@ permissions:
   contents: read
 
 jobs:
-  go_lint:
+  go_test:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
@@ -16,8 +16,4 @@ jobs:
           go-version-file: go.mod
           cache: true
 
-      - run: make fmt_check
-
-      - run: make mod_check
-
-      - run: make vet
+      - run: make test

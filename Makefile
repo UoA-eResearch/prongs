@@ -1,81 +1,100 @@
 SHELL := /bin/bash
+BINARY  := prongs
+MODULE  := github.com/thomaslaurenson/prongs
+VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
+LDFLAGS := -s -w -X $(MODULE)/internal/config.Version=$(VERSION)
 
-.PHONY: help install install_all pip_install update clean build lint format format_check test docker_build docker_run tag_release
+TAG     ?= $(shell git describe --tags --abbrev=0 2>/dev/null)
 
-help:
-	@echo "Available targets:"
-	@echo "  install         Install dependencies (uv)"
-	@echo "  install_all     Install all optional dependencies (uv)"
-	@echo "  update          Update all packages to latest versions"
-	@echo "  clean           Remove build artifacts"
-	@echo "  build           Build the package"
-	@echo "  lint            Check code with ruff"
-	@echo "  format          Format code with ruff"
-	@echo "  format_check    Check code formatting"
-	@echo "  test            Run pytest"
-	@echo "  tag_release     Tag git with version from pyproject and push"
-	@echo "  docker_build    Build the docker image"
-	@echo "  docker_run      Run the docker image"
 
-install:
-	uv sync
+.PHONY: help
+help: ## Show this help message
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
+		| awk 'BEGIN {FS = ":.*?## "}; {printf "  %-18s %s\n", $$1, $$2}'
 
-install_all:
-	uv sync --all-extras
+# BUILD
+.PHONY: build
+build: ## Build binary for current platform
+	go build -ldflags="$(LDFLAGS)" -o dist/$(BINARY) .
 
-update:
-	uv lock --upgrade
-	uv sync --all-extras
+.PHONY: build_snapshot
+build_snapshot: ## Build binaries for all platforms using goreleaser (snapshot)
+	goreleaser build --snapshot --clean
 
-clean:
-	rm -rf .venv dist build
-	find . -type d -name '__pycache__' -exec rm -rf {} +
-	find . -type d -name '*.egg-info' -exec rm -rf {} +
-	find . -type f -name '*.pyc' -delete
+# LINT
+.PHONY: fmt
+fmt: ## Format Go source files
+	gofmt -w .
 
-build:
-	uv build
+.PHONY: fmt_check
+fmt_check: ## Check Go formatting
+	@unformatted=$$(gofmt -l .); \
+	if [[ -n "$$unformatted" ]]; then \
+		echo "Unformatted Go files:"; \
+		echo "$$unformatted"; \
+		exit 1; \
+	fi
 
-lint:
-	uv run ruff check .
+.PHONY: mod_check
+mod_check: ## Check go.mod/go.sum tidiness
+	go mod tidy
+	git diff --exit-code go.mod go.sum
 
-format:
-	uv run ruff format .
+.PHONY: lint
+lint: fmt_check mod_check vet ## Run lint checks
 
-format_check:
-	uv run ruff format --check .
+.PHONY: vet
+vet: ## Run go vet
+	go vet ./...
 
-test:
-	uv run pytest -rP
+# TEST
+.PHONY: test
+test: ## Run all tests with race detector (requires network for integration tests)
+	go test -race -count=1 ./...
 
-# DOCKER
-docker_local_build:
-	docker build -f app/Dockerfile -t prongs .
+.PHONY: test_coverage
+test_coverage: ## Run tests with coverage report over internal packages
+	go test -race -count=1 -coverpkg=./internal/... -coverprofile=coverage.out ./...
+	go tool cover -func=coverage.out
 
-docker_local_run:
-	docker run --rm -e TARGET_CIDRS=45.33.32.156 -it prongs
+.PHONY: test_unit
+test_unit: ## Run unit tests only (no network)
+	go test -v -run 'TestExpand' ./internal/target/...
 
-docker_ghcr_run:
-	docker pull ghcr.io/uoa-eresearch/prongs:latest
-	docker tag ghcr.io/uoa-eresearch/prongs:latest prongs
-	docker run --rm -e TARGET_CIDRS=45.33.32.156 -it prongs
+# GET
+.PHONY: get_changelog
+get_changelog: ## Print release notes for TAG to stdout (default: latest tag; override with TAG=v1.0.0)
+	@tag="$(TAG)"; tag="$${tag#v}"; \
+	if [[ -z "$$tag" ]]; then \
+	  printf 'get_changelog: TAG is empty; pass TAG=v1.0.0 or create a git tag\n' >&2; \
+	  exit 1; \
+	fi; \
+	notes="$$(awk -v tag="$$tag" ' \
+	  /^## / { if (found) exit; if (index($$0,"## "tag" ")==1 || $$0=="## "tag) found=1; next } \
+	  found { lines[n++]=$$0 } \
+	  END { \
+	    s=0; while (s<n && lines[s]~/^[[:space:]]*$$/) s++; \
+	    e=n-1; while (e>=s && lines[e]~/^[[:space:]]*$$/) e--; \
+	    for (i=s;i<=e;i++) print lines[i] \
+	  }' CHANGELOG.md)"; \
+	if [[ -z "$$notes" ]]; then \
+	  printf 'get_changelog: no CHANGELOG entry for %s\n' "$$tag" >&2; \
+	  exit 1; \
+	fi; \
+	printf '%s\n' "$$notes"
 
-# TAG
-tag_release:
-	VERSION=$$(grep -m1 'version = ' pyproject.toml | cut -d '"' -f 2); \
-	TAG="v$$VERSION"; \
-	echo "[*] Current version: $$TAG"; \
-	read -p "[*] Tag and push? (y/N) " yn; \
-	case $$yn in \
-		[yY]*) \
-			git tag $$TAG; \
-			git push origin $$TAG; \
-			;; \
-		[nN]*) \
-			echo "[*] Exiting..."; \
-			;; \
-		*) \
-			echo "[*] Invalid response... Exiting"; \
-			exit 1; \
-			;; \
-	esac
+.PHONY: ci
+ci: lint test ## Run all CI checks locally
+
+# TASKS
+.PHONY: clean
+clean: ## Remove build artifacts
+	rm -rf bin/ dist/ install.sh install.ps1 checksums.txt
+
+.PHONY: docker_build
+docker_build: ## Build Docker image
+	docker build -t prongs .
+
+.PHONY: docker_run
+docker_run: ## Run Docker image against scanme.nmap.org
+	docker run --rm -e TARGET_CIDRS=45.33.32.156/32 prongs scan --all

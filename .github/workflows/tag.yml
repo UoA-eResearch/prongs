@@ -1,4 +1,4 @@
-name: Push
+name: Tag
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 permissions:
   contents: write
-  packages: write
+  id-token: write
 
 jobs:
 
@@ -15,6 +15,11 @@ jobs:
     uses: ./.github/workflows/lint.yml
     secrets: inherit
 
+  test:
+    uses: ./.github/workflows/test.yml
+    secrets: inherit
+
   release:
+    needs: [lint, test]
     uses: ./.github/workflows/release.yml
     secrets: inherit
