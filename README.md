@@ -10,24 +10,22 @@ Fast, custom security scanner.
 
 ## Installation
 
-```bash
+Download a pre-built binary from the [releases page](https://github.com/thomaslaurenson/prongs/releases). For easier install, use the bash installer script:
+
+```sh
 curl -fsSL https://github.com/thomaslaurenson/prongs/releases/latest/download/install.sh | bash
 ```
 
-Or download a binary directly from the [releases page](https://github.com/thomaslaurenson/prongs/releases).
+Or the PowerShell installer script if on Windows:
 
-### Container
-
-```bash
-docker pull ghcr.io/thomaslaurenson/prongs:latest
-docker run --rm -e TARGET_CIDRS=192.168.0.0/24 ghcr.io/thomaslaurenson/prongs:latest scan --all
+```ps
+irm https://github.com/thomaslaurenson/prongs/releases/latest/download/install.ps1 | iex
 ```
 
-Or build and run locally:
+Install from source:
 
-```bash
-docker build -t prongs .
-docker run --rm -e TARGET_CIDRS=192.168.0.0/24 prongs scan --all
+```sh
+go install github.com/thomaslaurenson/prongs@latest
 ```
 
 ## Usage
