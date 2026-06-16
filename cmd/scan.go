@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"strings"
 
@@ -150,52 +151,24 @@ Examples:
 	return cmd
 }
 
-// looksLikeFile returns true when the string is more likely a file path than
-// a CIDR. Check if file exists first, then try parsing as CIDR.
+// looksLikeFile returns true when s is more likely a file path than a CIDR/IP.
+// An existing file always wins; for non-existent paths containing a separator,
+// we use net.ParseIP and net.ParseCIDR to decide.
 func looksLikeFile(s string) bool {
-	// Check if it exists as a file
+	// Existing file always wins
 	info, err := os.Stat(s)
 	if err == nil && !info.IsDir() {
 		return true
 	}
 
-	// If it doesn't exist, check if it looks like a file path
-	// (has path separators but isn't a valid IP/CIDR)
+	// If it contains a path separator but isn't a valid IP or CIDR, treat as file
 	if strings.ContainsAny(s, "/\\") {
-		// Try parsing as CIDR - if it fails, it's probably a file path
-		_, _, err := parseIPOrCIDR(s)
+		if net.ParseIP(s) != nil {
+			return false
+		}
+		_, _, err := net.ParseCIDR(s)
 		return err != nil
 	}
 
 	return false
-}
-
-// parseIPOrCIDR attempts to parse s as either a bare IP or CIDR
-func parseIPOrCIDR(s string) (bool, bool, error) {
-	// Try bare IP first
-	if ip := parseIP(s); ip != nil {
-		return true, false, nil
-	}
-	// Try CIDR
-	if _, _, err := parseCIDR(s); err == nil {
-		return false, true, nil
-	}
-	return false, false, fmt.Errorf("not an IP or CIDR")
-}
-
-// Helper functions to avoid importing net in main
-func parseIP(s string) interface{} {
-	// Simplified check - contains dots or colons
-	if strings.Contains(s, ".") || strings.Contains(s, ":") {
-		return s
-	}
-	return nil
-}
-
-func parseCIDR(s string) (interface{}, interface{}, error) {
-	// Simplified check - contains slash and looks like IP
-	if strings.Contains(s, "/") && (strings.Contains(s, ".") || strings.Contains(s, ":")) {
-		return nil, nil, nil
-	}
-	return nil, nil, fmt.Errorf("not a CIDR")
 }
