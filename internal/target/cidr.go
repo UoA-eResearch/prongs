@@ -8,8 +8,10 @@ import (
 // Expand parses one or more CIDR strings and returns every host IP.
 // Single IPs (e.g. "45.33.32.156") are accepted without a prefix length.
 // Comment lines (starting with #) are skipped.
+// Duplicate IPs across overlapping or repeated CIDRs are suppressed.
 func Expand(cidrs []string) ([]net.IP, error) {
 	var hosts []net.IP
+	seen := make(map[string]struct{})
 	for _, cidr := range cidrs {
 		// Skip empty lines and comments
 		if cidr == "" || len(cidr) > 0 && cidr[0] == '#' {
@@ -18,7 +20,11 @@ func Expand(cidrs []string) ([]net.IP, error) {
 
 		// Accept bare IPs by treating them as /32
 		if ip := net.ParseIP(cidr); ip != nil {
-			hosts = append(hosts, ip)
+			key := ip.String()
+			if _, ok := seen[key]; !ok {
+				seen[key] = struct{}{}
+				hosts = append(hosts, ip)
+			}
 			continue
 		}
 
@@ -36,7 +42,11 @@ func Expand(cidrs []string) ([]net.IP, error) {
 			// For /32: just the single IP
 			// For /31: both IPs are usable
 			for ip := cloneIP(network.IP); network.Contains(ip); inc(ip) {
-				hosts = append(hosts, cloneIP(ip))
+				key := ip.String()
+				if _, ok := seen[key]; !ok {
+					seen[key] = struct{}{}
+					hosts = append(hosts, cloneIP(ip))
+				}
 			}
 			continue
 		}
@@ -44,7 +54,11 @@ func Expand(cidrs []string) ([]net.IP, error) {
 		// For /30 and larger: skip network and broadcast addresses
 		for ip := cloneIP(network.IP); network.Contains(ip); inc(ip) {
 			if !isNetworkOrBroadcast(ip, network) {
-				hosts = append(hosts, cloneIP(ip))
+				key := ip.String()
+				if _, ok := seen[key]; !ok {
+					seen[key] = struct{}{}
+					hosts = append(hosts, cloneIP(ip))
+				}
 			}
 		}
 	}

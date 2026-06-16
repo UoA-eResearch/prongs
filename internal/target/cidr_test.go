@@ -101,3 +101,38 @@ func TestExpandCommentLines(t *testing.T) {
 		t.Errorf("expected 192.168.1.1, got %s", hosts[0])
 	}
 }
+
+func TestExpandDeduplicateRepeatedCIDR(t *testing.T) {
+	// Same CIDR listed twice - each host should appear exactly once
+	hosts, err := target.Expand([]string{"192.168.1.0/30", "192.168.1.0/30"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	// /30 has 2 usable hosts; duplicating the CIDR must not double them
+	if len(hosts) != 2 {
+		t.Fatalf("expected 2 unique hosts, got %d (deduplication failed)", len(hosts))
+	}
+}
+
+func TestExpandDeduplicateOverlappingCIDRs(t *testing.T) {
+	// /24 fully contains the /30 - hosts in the /30 must not appear twice
+	hosts, err := target.Expand([]string{"192.168.1.0/30", "192.168.1.0/24"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	// /24 has 254 usable hosts; /30 adds no new ones
+	if len(hosts) != 254 {
+		t.Fatalf("expected 254 unique hosts, got %d (deduplication failed)", len(hosts))
+	}
+}
+
+func TestExpandDeduplicateRepeatedIP(t *testing.T) {
+	// Same bare IP listed twice - should appear exactly once
+	hosts, err := target.Expand([]string{"10.0.0.1", "10.0.0.1"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(hosts) != 1 {
+		t.Fatalf("expected 1 unique host, got %d (deduplication failed)", len(hosts))
+	}
+}
