@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.1 - 2026-06-17
+
+### Fixed
+
+- Parse target CIDR list and file bug
+
 ## 0.4.0 - 2026-05-27
 
 ### Added
