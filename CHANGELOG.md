@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.2 - 2026-06-23
+
+### Added
+
+- Version subcommand
+
 ## 0.4.1 - 2026-06-17
 
 ### Fixed
