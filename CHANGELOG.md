@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.3 - 2026-06-23
+
+### Fixed
+
+- Target parsing bug
+
+### Changed
+
+- Scan subcommand now separates `target` or `target-file`
+
 ## 0.4.2 - 2026-06-23
 
 ### Added
