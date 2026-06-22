@@ -1,7 +1,6 @@
 package config
 
 const (
-	Version            = "0.4.0"
 	DefaultConcurrency = 200
 	DefaultTimeout     = 2 // seconds
 )

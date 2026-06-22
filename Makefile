@@ -2,7 +2,7 @@ SHELL := /bin/bash
 BINARY  := prongs
 MODULE  := github.com/thomaslaurenson/prongs
 VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
-LDFLAGS := -s -w -X $(MODULE)/internal/config.Version=$(VERSION)
+LDFLAGS := -s -w -X $(MODULE)/cmd.Version=$(VERSION)
 
 TAG     ?= $(shell git describe --tags --abbrev=0 2>/dev/null)
 

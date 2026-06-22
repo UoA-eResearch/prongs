@@ -21,4 +21,4 @@ builds:
       - goos: windows
         goarch: arm64
     ldflags:
-      - -s -w -X github.com/thomaslaurenson/prongs/internal/config.Version={{.Version}}
+      - -s -w -X github.com/thomaslaurenson/prongs/cmd.Version={{.Version}}
