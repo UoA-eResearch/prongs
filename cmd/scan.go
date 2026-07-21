@@ -31,16 +31,32 @@ func newScanCmd() *cobra.Command {
 		Short: "Run scanners against target CIDRs",
 		Long: `Run one or more scanners against one or more target networks.
 
-Targets can be provided as CIDR ranges or single IPs via --target (inline,
-comma-separated) or --target-file (path to a file, one entry per line).
-If neither flag is provided, the TARGET_CIDRS environment variable is used.
+Targets are CIDR ranges or single IPs, provided via --target (repeatable
+and/or comma-separated) or --target-file (a file, one entry per line). The
+two flags are mutually exclusive. If neither is provided, the TARGET_CIDRS
+environment variable (comma-separated) is used as a fallback.
 
 Examples:
+  # Run one scanner against a single network
   prongs scan --scanner password-ssh --target 192.168.0.0/24
-  prongs scan --scanner password-ssh --target 10.0.0.0/8,192.168.0.0/24
-  prongs scan --scanner password-ssh --target-file targets.txt
-  prongs scan --all --output pretty
-  TARGET_CIDRS=10.0.0.0/8 prongs scan --all`,
+
+  # Run all default scanners against multiple networks
+  prongs scan --all --target 192.168.0.0/24 --target 10.0.0.0/24
+
+  # Multiple networks as a single comma-separated value
+  prongs scan --all --target 192.168.0.0/24,10.0.0.0/24
+
+  # Load targets from a file
+  prongs scan --all --target-file targets.txt
+
+  # Pretty-print output
+  prongs scan --all --target 192.168.0.0/24 --output pretty
+
+  # Limit the number of concurrent probes
+  prongs scan --all --target 192.168.0.0/24 --concurrency 50
+
+  # Use the TARGET_CIDRS environment variable (comma-separated)
+  TARGET_CIDRS=192.168.0.0/24,10.0.0.0/24 prongs scan --all`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if output != "text" && output != "pretty" {
 				return fmt.Errorf("--output must be 'text' or 'pretty', got %q", output)
