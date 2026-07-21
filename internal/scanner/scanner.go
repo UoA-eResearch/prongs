@@ -15,8 +15,7 @@ type Result struct {
 
 // Scanner is implemented by every scan module.
 type Scanner interface {
-	// Name returns the scanner identifier used in -s flags and output.
-	// Must match the Python version exactly, e.g. "password-ssh".
+	// Name returns the scanner identifier used in --scanner flags and output.
 	Name() string
 
 	// DefaultEnabled returns false for scanners excluded from --all.

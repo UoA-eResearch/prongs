@@ -6,6 +6,7 @@ var All = []Scanner{
 	&PasswordSSH{},
 	&AccessibleRDP{},
 	&AccessibleDB{},
+	&InsecureHTTP{},
 }
 
 // ByName maps each scanner name to its implementation for O(1) lookup.
