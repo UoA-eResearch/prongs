@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.0 - 2026-07-22
+
+### Added
+
+- Add insecure-http scanner detecting websites served over plaintext HTTP
+
+### Fixed
+
+- Correct the documented default for the accessible-rdp scanner
+
 ## 0.4.5 - 2026-07-22
 
 ### Updated

@@ -4,7 +4,7 @@
 
 ![Release Version](https://img.shields.io/github/v/release/thomaslaurenson/prongs?style=flat&logo=github) ![Release downloads](https://img.shields.io/github/downloads/thomaslaurenson/prongs/total?label=downloads&logo=github)
 
-![Go Version](https://img.shields.io/github/go-mod/go-version/thomaslaurenson/prongs?logo=go) ![Code Coverage](https://img.shields.io/badge/Coverage-95.7%25-blue?logo=go)
+![Go Version](https://img.shields.io/github/go-mod/go-version/thomaslaurenson/prongs?logo=go) ![Code Coverage](https://img.shields.io/badge/Coverage-96.2%25-blue?logo=go)
 
 Fast, custom security scanner.
 
@@ -54,14 +54,18 @@ Targets are CIDR ranges or single IPs, supplied via `--target` (repeatable and/o
 | Name | Description | Default |
 |---|---|---|
 | `password-ssh` | Detects SSH servers accepting password authentication | yes |
-| `accessible-rdp` | Detects RDP services accepting unauthenticated connections | yes |
+| `accessible-rdp` | Detects RDP services accepting unauthenticated connections | no |
 | `accessible-db` | Detects databases accepting unauthenticated connections | yes |
+| `insecure-http` | Detects websites served over plaintext HTTP without an HTTPS redirect | yes |
 
 ### Examples
 
 ```bash
 # Run one scanner against a single network
 prongs scan --scanner password-ssh --target 192.168.0.0/24
+
+# Detect websites served over plaintext HTTP
+prongs scan --scanner insecure-http --target 192.168.0.0/24
 
 # Run all default scanners against multiple networks
 prongs scan --all --target 192.168.0.0/24 --target 10.0.0.0/24
